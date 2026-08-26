@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<script>
+			(function() {
+				try {
+					var key = 'go-crazy-theme';
+					var savedTheme = null;
+					try {
+						savedTheme = localStorage.getItem(key);
+					} catch (error) {}
+
+					var theme = 'light';
+					if (savedTheme === 'light' || savedTheme === 'dark') {
+						theme = savedTheme;
+					} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						theme = 'dark';
+					}
+
+					document.documentElement.setAttribute('data-theme', theme);
+				} catch (error) {}
+			})();
+		</script>
+		{{ content_for_header }}
+		<link rel="stylesheet" href="{{ 'theme.css' | asset_url }}" />
+	</head>
+	<body>
+		<!-- TEMPORARY: will move into the real header in Phase 2 -->
+		<button type="button" id="theme-toggle" aria-pressed="false">Switch to dark mode</button>
+		{{ content_for_layout }}
+		<script src="{{ 'theme.js' | asset_url }}" defer></script>
+	</body>
+</html>

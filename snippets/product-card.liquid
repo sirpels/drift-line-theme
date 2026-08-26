@@ -1,0 +1,57 @@
+{%- if card_product != blank -%}
+  <a class="product-card" href="{{ card_product.url | default: '#' }}" aria-label="{{ card_product.title | escape }}">
+    <div class="product-card__media">
+      {%- if card_product.featured_image != blank -%}
+        {%- if card_product.images[1] != blank -%}
+          <img
+            class="product-card__image product-card__image--secondary"
+            src="{{ card_product.images[1] | image_url: width: 800 }}"
+            srcset="{{ card_product.images[1] | image_url: width: 320 }} 320w, {{ card_product.images[1] | image_url: width: 480 }} 480w, {{ card_product.images[1] | image_url: width: 640 }} 640w, {{ card_product.images[1] | image_url: width: 800 }} 800w"
+            sizes="(min-width: 1200px) 22vw, (min-width: 768px) 33vw, 50vw"
+            width="{{ card_product.images[1].width }}"
+            height="{{ card_product.images[1].height }}"
+            alt="{{ card_product.title | escape }}"
+            loading="lazy"
+          >
+        {%- endif -%}
+
+        <img
+          class="product-card__image product-card__image--primary"
+          src="{{ card_product.featured_image | image_url: width: 800 }}"
+          srcset="{{ card_product.featured_image | image_url: width: 320 }} 320w, {{ card_product.featured_image | image_url: width: 480 }} 480w, {{ card_product.featured_image | image_url: width: 640 }} 640w, {{ card_product.featured_image | image_url: width: 800 }} 800w"
+          sizes="(min-width: 1200px) 22vw, (min-width: 768px) 33vw, 50vw"
+          width="{{ card_product.featured_image.width }}"
+          height="{{ card_product.featured_image.height }}"
+          alt="{{ card_product.title | escape }}"
+          loading="lazy"
+        >
+      {%- else -%}
+        <div class="product-card__media-fallback" aria-hidden="true"></div>
+      {%- endif -%}
+
+      {%- assign badge_text = '' -%}
+      {%- if card_product.available == false -%}
+        {%- assign badge_text = 'Sold out' -%}
+      {%- elsif card_product.compare_at_price > card_product.price -%}
+        {%- assign badge_text = 'Sale' -%}
+      {%- elsif card_product.tags contains 'new' -%}
+        {%- assign badge_text = 'New' -%}
+      {%- endif -%}
+
+      {%- if badge_text != blank -%}
+        <span class="product-card__badge">{{ badge_text }}</span>
+      {%- endif -%}
+    </div>
+
+    <div class="product-card__content">
+      <h3 class="product-card__title">{{ card_product.title }}</h3>
+
+      <div class="product-card__price">
+        <span class="product-card__price-current">{{ card_product.price | money }}</span>
+        {%- if card_product.compare_at_price > card_product.price -%}
+          <span class="product-card__price-compare">{{ card_product.compare_at_price | money }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </a>
+{%- endif -%}

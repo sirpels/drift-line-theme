@@ -1,0 +1,25 @@
+[
+	{
+		"name": "Theme",
+		"settings": [
+			{
+				"type": "text",
+				"id": "store_name",
+				"label": "Store name",
+				"default": "Go Crazy"
+			},
+			{
+				"type": "color",
+				"id": "color_background",
+				"label": "Background color",
+				"default": "#ffffff"
+			},
+			{
+				"type": "color",
+				"id": "color_text",
+				"label": "Body text color",
+				"default": "#111111"
+			}
+		]
+	}
+]
