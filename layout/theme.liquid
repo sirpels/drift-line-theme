@@ -27,8 +27,7 @@
 		<link rel="stylesheet" href="{{ 'theme.css' | asset_url }}" />
 	</head>
 	<body>
-		<!-- TEMPORARY: will move into the real header in Phase 2 -->
-		<button type="button" id="theme-toggle" aria-pressed="false">Switch to dark mode</button>
+		{% section 'header' %}
 		{{ content_for_layout }}
 		<script src="{{ 'theme.js' | asset_url }}" defer></script>
 	</body>

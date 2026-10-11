@@ -1,0 +1,74 @@
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+      {% if section.settings.logo != blank %}
+        {{
+          section.settings.logo
+          | image_url: width: 360
+          | image_tag:
+            widths: '120, 180, 240, 360',
+            sizes: '(min-width: 750px) 180px, 140px',
+            class: 'site-header__logo',
+            loading: 'eager',
+            alt: shop.name
+        }}
+      {% else %}
+        <span class="site-header__name">{{ shop.name | escape }}</span>
+      {% endif %}
+    </a>
+
+    <div class="site-header__actions">
+      {% if section.settings.menu != blank and section.settings.menu.links.size > 0 %}
+        <nav class="site-header__nav" aria-label="Main navigation">
+          <ul class="site-header__nav-list">
+            {% for link in section.settings.menu.links %}
+              <li class="site-header__nav-item">
+                <a
+                  class="site-header__nav-link"
+                  href="{{ link.url }}"
+                  {% if link.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{ link.title | escape }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
+
+      {% if section.settings.show_theme_toggle %}
+        <button type="button" id="theme-toggle" class="site-header__theme-toggle" aria-pressed="false">
+          Switch to dark mode
+        </button>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_theme_toggle",
+      "label": "Show theme toggle",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
