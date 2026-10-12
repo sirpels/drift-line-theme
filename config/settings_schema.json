@@ -29,7 +29,7 @@
 				"type": "font_picker",
 				"id": "font_display",
 				"label": "Display font",
-				"default": "assistant_n4"
+				"default": "chakra_petch_n4"
 			},
 			{
 				"type": "font_picker",
