@@ -25,6 +25,57 @@
 		</script>
 		{{ content_for_header }}
 		<link rel="stylesheet" href="{{ 'theme.css' | asset_url }}" />
+		{% liquid
+			assign display_font = settings.font_display
+			assign body_font = settings.font_body
+			assign display_bold = display_font | font_modify: 'weight', 'bold' | default: display_font
+			assign display_strong = display_font | font_modify: 'weight', '700' | default: display_bold
+			assign display_heavy = display_font | font_modify: 'weight', '800' | default: display_strong
+			assign body_bold = body_font | font_modify: 'weight', 'bold' | default: body_font
+			assign body_medium = body_font | font_modify: 'weight', '600' | default: body_bold
+			assign body_heavy = body_font | font_modify: 'weight', '800' | default: body_bold
+			assign font_roles = 'display,display_strong,display_heavy,body,body_medium,body_heavy' | split: ','
+			assign loaded_fonts = ''
+		%}
+		{% style %}
+			{% for role in font_roles %}
+				{% liquid
+					case role
+						when 'display'
+							assign selected_font = display_font
+						when 'display_strong'
+							assign selected_font = display_strong
+						when 'display_heavy'
+							assign selected_font = display_heavy
+						when 'body'
+							assign selected_font = body_font
+						when 'body_medium'
+							assign selected_font = body_medium
+						when 'body_heavy'
+							assign selected_font = body_heavy
+					endcase
+				%}
+				{% unless selected_font.system? %}
+					{% assign font_key = selected_font | font_url | prepend: '|' | append: '|' %}
+					{% unless loaded_fonts contains font_key %}
+						{{ selected_font | font_face: font_display: 'swap' }}
+						{% assign loaded_fonts = loaded_fonts | append: font_key %}
+					{% endunless %}
+				{% endunless %}
+			{% endfor %}
+			:root {
+				--font-display: {{ display_font.family | json }}, {{ display_font.fallback_families }};
+				--font-body: {{ body_font.family | json }}, {{ body_font.fallback_families }};
+				--font-display-weight: {{ display_font.weight }};
+				--font-display-style: {{ display_font.style }};
+				--font-display-weight-strong: {{ display_strong.weight }};
+				--font-display-weight-heavy: {{ display_heavy.weight }};
+				--font-body-weight: {{ body_font.weight }};
+				--font-body-style: {{ body_font.style }};
+				--font-body-weight-medium: {{ body_medium.weight }};
+				--font-body-weight-heavy: {{ body_heavy.weight }};
+			}
+		{% endstyle %}
 	</head>
 	<body>
 		{% section 'header' %}
