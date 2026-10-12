@@ -1,0 +1,59 @@
+{% liquid
+  assign description_preview = directory_collection.description | strip_html | strip
+  assign entry_image = directory_collection.image
+  if entry_image == blank
+    assign entry_image = directory_collection.products.first.featured_image
+  endif
+  assign image_alt = entry_image.alt | default: directory_collection.title
+%}
+<li class="collections-directory__item">
+  <a
+    class="collections-directory__entry"
+    href="{{ directory_collection.url }}"
+    aria-labelledby="CollectionTitle-{{ section_id }}-{{ directory_collection.id }}"
+  >
+    <div class="collections-directory__content">
+      <span class="collections-directory__index" aria-hidden="true">
+        {% if entry_index < 10 %}0{% endif %}{{ entry_index }}
+      </span>
+      <h2 class="collections-directory__title" id="CollectionTitle-{{ section_id }}-{{ directory_collection.id }}">
+        {{ directory_collection.title | escape }}
+      </h2>
+      {% if description_preview != blank %}
+        <p class="collections-directory__description">
+          {{ description_preview | truncatewords: 32 | escape }}
+        </p>
+      {% endif %}
+      <div class="collections-directory__metadata">
+        {% if show_product_count %}
+          <span class="collections-directory__count">
+            {{ directory_collection.all_products_count }}
+            {{ directory_collection.all_products_count | pluralize: 'product', 'products' }}
+          </span>
+        {% endif %}
+        <span class="collections-directory__cta">
+          {{ cta_label | escape }} <span aria-hidden="true">&rarr;</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="collections-directory__media">
+      {% if entry_image != blank %}
+        {{
+          entry_image
+          | image_url: width: 1600
+          | image_tag:
+            widths: '320, 480, 720, 960, 1200, 1600',
+            sizes: '(min-width: 1264px) 576px, (min-width: 750px) calc((100vw - 7rem) / 2), calc(100vw - 2rem)',
+            class: 'collections-directory__image',
+            loading: 'lazy',
+            alt: image_alt
+        }}
+      {% else %}
+        <div class="collections-directory__fallback" aria-hidden="true">
+          {{ 'collection-1' | placeholder_svg_tag: 'collections-directory__placeholder' }}
+        </div>
+      {% endif %}
+    </div>
+  </a>
+</li>

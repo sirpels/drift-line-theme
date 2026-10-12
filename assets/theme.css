@@ -494,3 +494,212 @@ img{max-width:100%;height:auto;display:block}
     min-height: 34rem;
   }
 }
+
+.collections-directory {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.collections-directory__inner {
+  width: min(100% - 2rem, 1200px);
+  margin: 0 auto;
+  padding: var(--space-7) 0 var(--space-8);
+}
+
+.collections-directory__heading,
+.collections-directory__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: var(--font-display-style);
+  font-weight: var(--font-display-weight-heavy);
+  line-height: var(--line-height-heading);
+  overflow-wrap: anywhere;
+}
+
+.collections-directory__heading {
+  margin-bottom: var(--space-7);
+  font-size: var(--text-h1);
+}
+
+.collections-directory__list {
+  display: grid;
+  gap: var(--space-7);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.collections-directory__entry {
+  display: grid;
+  gap: var(--space-5);
+  padding-bottom: var(--space-7);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.collections-directory__entry:focus-visible,
+.collections-directory__page-link:focus-visible {
+  outline: 2px solid var(--color-border-strong);
+  outline-offset: 3px;
+}
+
+.collections-directory__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.collections-directory__index {
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  font-style: normal;
+}
+
+.collections-directory__title {
+  font-size: var(--text-h2);
+}
+
+.collections-directory__description {
+  max-width: 34rem;
+  margin: var(--space-5) 0 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: var(--font-body-weight);
+  line-height: var(--line-height-body);
+  overflow-wrap: anywhere;
+}
+
+.collections-directory__metadata {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-body);
+}
+
+.collections-directory__count {
+  color: var(--color-text-muted);
+}
+
+.collections-directory__cta {
+  margin-inline-start: auto;
+  font-family: var(--font-display);
+  font-style: var(--font-display-style);
+  font-weight: var(--font-display-weight-strong);
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+
+.collections-directory__entry:hover .collections-directory__cta,
+.collections-directory__entry:focus-visible .collections-directory__cta {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.collections-directory__media {
+  min-width: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.collections-directory__image,
+.collections-directory__fallback,
+.collections-directory__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.collections-directory__image {
+  object-fit: cover;
+}
+
+.collections-directory__placeholder {
+  fill: var(--color-text-muted);
+}
+
+.collections-directory__empty {
+  padding: var(--space-6) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-body);
+  line-height: var(--line-height-body);
+}
+
+.collections-directory__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-7);
+  font-size: var(--text-body);
+}
+
+.collections-directory__page-link,
+.collections-directory__page-current,
+.collections-directory__page-gap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  padding: var(--space-2);
+}
+
+.collections-directory__page-link,
+.collections-directory__page-current {
+  border: 1px solid var(--color-border);
+}
+
+.collections-directory__page-link:hover,
+.collections-directory__page-current {
+  border-color: var(--color-border-strong);
+}
+
+@media (min-width: 750px) {
+  .collections-directory__inner {
+    width: min(100% - 4rem, 1200px);
+    padding: var(--space-8) 0;
+  }
+
+  .collections-directory__list {
+    gap: var(--space-8);
+  }
+
+  .collections-directory__entry {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-7);
+    align-items: center;
+    padding-bottom: var(--space-8);
+  }
+
+  .collections-directory__content {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .collections-directory__media {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .collections-directory__item:nth-child(even) .collections-directory__content {
+    grid-column: 2;
+  }
+
+  .collections-directory__item:nth-child(even) .collections-directory__media {
+    grid-column: 1;
+  }
+}

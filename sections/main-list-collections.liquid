@@ -1,0 +1,107 @@
+{% liquid
+  assign directory_heading = section.settings.heading | default: 'Collections'
+  assign cta_label = section.settings.cta_label | default: 'Explore collection'
+%}
+
+{% capture directory_entries %}
+  {% if section.settings.collection_list != blank %}
+    {% paginate section.settings.collection_list by 12 %}
+      {% assign directory_pagination = paginate %}
+      {% for directory_collection in section.settings.collection_list %}
+        {% assign entry_index = paginate.current_offset | plus: forloop.index %}
+        {% render 'collection-directory-item',
+          directory_collection: directory_collection,
+          entry_index: entry_index,
+          cta_label: cta_label,
+          show_product_count: section.settings.show_product_count,
+          section_id: section.id
+        %}
+      {% endfor %}
+    {% endpaginate %}
+  {% else %}
+    {% paginate collections by 12 %}
+      {% assign directory_pagination = paginate %}
+      {% for directory_collection in collections %}
+        {% assign entry_index = paginate.current_offset | plus: forloop.index %}
+        {% render 'collection-directory-item',
+          directory_collection: directory_collection,
+          entry_index: entry_index,
+          cta_label: cta_label,
+          show_product_count: section.settings.show_product_count,
+          section_id: section.id
+        %}
+      {% else %}
+        <li class="collections-directory__empty">No collections are available.</li>
+      {% endfor %}
+    {% endpaginate %}
+  {% endif %}
+{% endcapture %}
+
+<section class="collections-directory" aria-labelledby="CollectionsHeading-{{ section.id }}">
+  <div class="collections-directory__inner">
+    <h1 class="collections-directory__heading" id="CollectionsHeading-{{ section.id }}">
+      {{ directory_heading | escape }}
+    </h1>
+
+    <ul class="collections-directory__list" role="list">
+      {{ directory_entries }}
+    </ul>
+
+    {% if directory_pagination.pages > 1 %}
+      <nav class="collections-directory__pagination" aria-label="Collection directory pages">
+        {% if directory_pagination.previous %}
+          <a class="collections-directory__page-link" href="{{ directory_pagination.previous.url }}">Previous</a>
+        {% endif %}
+        {% for part in directory_pagination.parts %}
+          {% assign part_number = part.title | plus: 0 %}
+          {% if part.is_link %}
+            <a class="collections-directory__page-link" href="{{ part.url }}" aria-label="Page {{ part.title }}">
+              {{ part.title }}
+            </a>
+          {% elsif part_number == directory_pagination.current_page %}
+            <span class="collections-directory__page-current" aria-current="page" aria-label="Page {{ part.title }}">
+              {{ part.title }}
+            </span>
+          {% else %}
+            <span class="collections-directory__page-gap">{{ part.title }}</span>
+          {% endif %}
+        {% endfor %}
+        {% if directory_pagination.next %}
+          <a class="collections-directory__page-link" href="{{ directory_pagination.next.url }}">Next</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collections directory",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Collections"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Curated collections",
+      "info": "Leave blank to show all available collections."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Explore collection"
+    }
+  ]
+}
+{% endschema %}
