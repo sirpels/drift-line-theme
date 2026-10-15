@@ -1,4 +1,13 @@
-<header class="site-header">
+{% liquid
+  assign has_menu = false
+  if section.settings.menu != blank and section.settings.menu.links.size > 0
+    assign has_menu = true
+  endif
+  assign menu_style = section.settings.mobile_menu_style | default: 'full_screen'
+  assign menu_text_scale = section.settings.menu_text_scale | default: 'oversized'
+%}
+
+<header class="site-header" data-site-header data-menu-style="{{ menu_style }}">
   <div class="site-header__inner">
     <a class="site-header__brand" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
       {% if section.settings.logo != blank %}
@@ -7,7 +16,7 @@
           | image_url: width: 360
           | image_tag:
             widths: '120, 180, 240, 360',
-            sizes: '(min-width: 750px) 180px, 140px',
+            sizes: '(min-width: 901px) 180px, 140px',
             class: 'site-header__logo',
             loading: 'eager',
             alt: shop.name
@@ -17,34 +26,94 @@
       {% endif %}
     </a>
 
+    {% if has_menu %}
+      <nav class="site-header__desktop-nav" aria-label="Main navigation" data-desktop-navigation>
+        {% render 'header-navigation', menu: section.settings.menu, show_numbers: false %}
+      </nav>
+    {% endif %}
+
     <div class="site-header__actions">
-      {% if section.settings.menu != blank and section.settings.menu.links.size > 0 %}
-        <nav class="site-header__nav" aria-label="Main navigation">
-          <ul class="site-header__nav-list">
-            {% for link in section.settings.menu.links %}
-              <li class="site-header__nav-item">
-                <a
-                  class="site-header__nav-link"
-                  href="{{ link.url }}"
-                  {% if link.current %}
-                    aria-current="page"
-                  {% endif %}
-                >
-                  {{ link.title | escape }}
-                </a>
-              </li>
-            {% endfor %}
-          </ul>
-        </nav>
+      {% if section.settings.show_theme_toggle %}
+        <button
+          type="button"
+          id="theme-toggle"
+          class="site-header__icon-button site-header__theme-toggle"
+          aria-label="Dark mode"
+          aria-pressed="false"
+          title="Dark mode"
+          data-theme-toggle
+          disabled
+        >
+          <svg class="site-header__theme-icon--moon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z" />
+          </svg>
+          <svg class="site-header__theme-icon--sun" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" />
+          </svg>
+        </button>
       {% endif %}
 
-      {% if section.settings.show_theme_toggle %}
-        <button type="button" id="theme-toggle" class="site-header__theme-toggle" aria-pressed="false">
-          Switch to dark mode
+      {% if has_menu %}
+        <button
+          type="button"
+          class="site-header__icon-button site-header__menu-button"
+          aria-label="Menu"
+          aria-expanded="false"
+          aria-controls="HeaderMenu-{{ section.id }}"
+          {% unless menu_style == 'dropdown' %}aria-haspopup="dialog"{% endunless %}
+          data-menu-trigger
+          hidden
+        >
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
         </button>
       {% endif %}
     </div>
   </div>
+
+  {% if has_menu %}
+    {% if menu_style == 'dropdown' %}
+      <div
+        id="HeaderMenu-{{ section.id }}"
+        class="site-header__panel site-header__panel--dropdown"
+        data-menu-text-scale="{{ menu_text_scale }}"
+        data-menu-numbers="{{ section.settings.show_menu_numbers }}"
+        data-menu-panel
+        hidden
+      >
+    {% else %}
+      <dialog
+        id="HeaderMenu-{{ section.id }}"
+        class="site-header__panel site-header__panel--{{ menu_style }}"
+        aria-labelledby="HeaderMenuTitle-{{ section.id }}"
+        data-menu-text-scale="{{ menu_text_scale }}"
+        data-menu-numbers="{{ section.settings.show_menu_numbers }}"
+        data-menu-panel
+        hidden
+      >
+    {% endif %}
+      <div class="site-header__panel-inner">
+        <div class="site-header__panel-toolbar">
+          <span class="site-header__panel-title" id="HeaderMenuTitle-{{ section.id }}">Menu</span>
+          <button type="button" class="site-header__close-button" data-menu-close>
+            <span>Close</span>
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="m6 6 12 12M6 18 18 6" />
+            </svg>
+          </button>
+        </div>
+        <nav class="site-header__responsive-nav" aria-label="Main navigation">
+          {% render 'header-navigation', menu: section.settings.menu, show_numbers: section.settings.show_menu_numbers %}
+        </nav>
+      </div>
+    {% if menu_style == 'dropdown' %}
+      </div>
+    {% else %}
+      </dialog>
+    {% endif %}
+  {% endif %}
 </header>
 
 {% schema %}
@@ -67,6 +136,34 @@
       "type": "checkbox",
       "id": "show_theme_toggle",
       "label": "Show theme toggle",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "mobile_menu_style",
+      "label": "Mobile menu style",
+      "options": [
+        { "value": "full_screen", "label": "Full screen" },
+        { "value": "drawer", "label": "Side drawer" },
+        { "value": "dropdown", "label": "Dropdown panel" }
+      ],
+      "default": "full_screen"
+    },
+    {
+      "type": "select",
+      "id": "menu_text_scale",
+      "label": "Menu text scale",
+      "options": [
+        { "value": "compact", "label": "Compact" },
+        { "value": "large", "label": "Large" },
+        { "value": "oversized", "label": "Oversized" }
+      ],
+      "default": "oversized"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_menu_numbers",
+      "label": "Show menu numbers",
       "default": true
     }
   ]

@@ -1,0 +1,18 @@
+<ul class="site-header__nav-list" role="list">
+  {% for link in menu.links %}
+    <li class="site-header__nav-item">
+      <a
+        class="site-header__nav-link"
+        href="{{ link.url }}"
+        {% if link.current %}aria-current="page"{% endif %}
+      >
+        {% if show_numbers %}
+          <span class="site-header__nav-number" aria-hidden="true">
+            {% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}
+          </span>
+        {% endif %}
+        <span class="site-header__nav-label">{{ link.title | escape }}</span>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
