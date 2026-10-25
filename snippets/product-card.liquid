@@ -1,4 +1,5 @@
 {%- if card_product != blank -%}
+  {%- assign card_image_sizes = card_sizes | default: '(min-width: 1200px) 22vw, (min-width: 768px) 33vw, 50vw' -%}
   <a class="product-card" href="{{ card_product.url | default: '#' }}" aria-label="{{ card_product.title | escape }}">
     <div class="product-card__media">
       {%- if card_product.featured_image != blank -%}
@@ -7,7 +8,7 @@
             class="product-card__image product-card__image--secondary"
             src="{{ card_product.images[1] | image_url: width: 800 }}"
             srcset="{{ card_product.images[1] | image_url: width: 320 }} 320w, {{ card_product.images[1] | image_url: width: 480 }} 480w, {{ card_product.images[1] | image_url: width: 640 }} 640w, {{ card_product.images[1] | image_url: width: 800 }} 800w"
-            sizes="(min-width: 1200px) 22vw, (min-width: 768px) 33vw, 50vw"
+            sizes="{{ card_image_sizes }}"
             width="{{ card_product.images[1].width }}"
             height="{{ card_product.images[1].height }}"
             alt="{{ card_product.title | escape }}"
@@ -19,7 +20,7 @@
           class="product-card__image product-card__image--primary"
           src="{{ card_product.featured_image | image_url: width: 800 }}"
           srcset="{{ card_product.featured_image | image_url: width: 320 }} 320w, {{ card_product.featured_image | image_url: width: 480 }} 480w, {{ card_product.featured_image | image_url: width: 640 }} 640w, {{ card_product.featured_image | image_url: width: 800 }} 800w"
-          sizes="(min-width: 1200px) 22vw, (min-width: 768px) 33vw, 50vw"
+          sizes="{{ card_image_sizes }}"
           width="{{ card_product.featured_image.width }}"
           height="{{ card_product.featured_image.height }}"
           alt="{{ card_product.title | escape }}"

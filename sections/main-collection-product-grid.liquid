@@ -1,7 +1,87 @@
-<section class="main-collection-product-grid" aria-label="Collection products">
-  <div class="main-collection-product-grid__list">
-    {% for product in collection.products %}
-      {% render 'product-card', card_product: product %}
-    {% endfor %}
+<section class="main-collection-product-grid" aria-labelledby="CollectionHeading-{{ section.id }}">
+  <div class="main-collection-product-grid__inner">
+    <header class="main-collection-product-grid__header">
+      <div class="main-collection-product-grid__intro">
+        <h1 class="main-collection-product-grid__heading" id="CollectionHeading-{{ section.id }}">
+          {{ collection.title | escape }}
+        </h1>
+
+        {% if section.settings.show_description and collection.description != blank %}
+          <div class="main-collection-product-grid__description">
+            {{ collection.description }}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if section.settings.show_product_count %}
+        <p class="main-collection-product-grid__count">
+          {{ collection.products_count }} {% if collection.products_count == 1 %}product{% else %}products{% endif %}
+        </p>
+      {% endif %}
+    </header>
+
+    {% if collection.products_count == 0 %}
+      <p class="main-collection-product-grid__empty">No products are available in this collection yet.</p>
+    {% else %}
+      {% paginate collection.products by 24 %}
+        <ul class="main-collection-product-grid__list" role="list">
+          {% for product in collection.products %}
+            <li class="main-collection-product-grid__item">
+              {% render 'product-card',
+                card_product: product,
+                card_sizes: '(min-width: 1264px) 282px, (min-width: 1100px) calc((100vw - 8.5rem) / 4), (min-width: 750px) calc((100vw - 7rem) / 3), calc((100vw - 3rem) / 2)'
+              %}
+            </li>
+          {% endfor %}
+        </ul>
+
+        {% if paginate.pages > 1 %}
+          <nav class="main-collection-product-grid__pagination" aria-label="Pagination">
+            {% if paginate.previous %}
+              <a class="main-collection-product-grid__page-link" href="{{ paginate.previous.url }}">Previous</a>
+            {% endif %}
+
+            {% for part in paginate.parts %}
+              {% assign part_number = part.title | plus: 0 %}
+              {% if part.is_link %}
+                <a class="main-collection-product-grid__page-link" href="{{ part.url }}" aria-label="Page {{ part.title }}">
+                  {{ part.title }}
+                </a>
+              {% elsif part_number == paginate.current_page %}
+                <span class="main-collection-product-grid__page-current" aria-current="page" aria-label="Page {{ part.title }}">
+                  {{ part.title }}
+                </span>
+              {% else %}
+                <span class="main-collection-product-grid__page-gap">{{ part.title }}</span>
+              {% endif %}
+            {% endfor %}
+
+            {% if paginate.next %}
+              <a class="main-collection-product-grid__page-link" href="{{ paginate.next.url }}">Next</a>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% endpaginate %}
+    {% endif %}
   </div>
 </section>
+
+{% schema %}
+{
+  "name": "Collection products",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
