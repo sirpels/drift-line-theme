@@ -1,0 +1,31 @@
+{% liquid
+  assign media_alt = media.alt | default: product_title
+  assign image_loading = 'lazy'
+  if first_media
+    assign image_loading = 'eager'
+  endif
+%}
+
+<div class="product-media product-media--{{ media.media_type }}">
+  {% case media.media_type %}
+    {% when 'image' %}
+      {{
+        media
+        | image_url: width: 1600
+        | image_tag:
+          widths: '360, 540, 720, 900, 1200, 1600',
+          sizes: '(min-width: 900px) min(56vw, 700px), calc(100vw - 2rem)',
+          class: 'product-media__image',
+          loading: image_loading,
+          alt: media_alt
+      }}
+    {% when 'video' %}
+      {{ media | video_tag: controls: true, autoplay: false, class: 'product-media__video' }}
+    {% when 'external_video' %}
+      {{ media | external_video_tag: class: 'product-media__external-video' }}
+    {% when 'model' %}
+      {{ media | model_viewer_tag: class: 'product-media__model' }}
+    {% else %}
+      {{ media | media_tag }}
+  {% endcase %}
+</div>

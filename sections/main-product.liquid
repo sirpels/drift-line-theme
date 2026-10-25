@@ -1,0 +1,122 @@
+{% liquid
+  assign selected_variant = product.selected_or_first_available_variant | default: product.variants.first
+  assign on_sale = false
+  if selected_variant.compare_at_price > selected_variant.price
+    assign on_sale = true
+  endif
+  assign product_form_id = 'ProductForm-' | append: section.id
+%}
+
+<section class="product-detail" data-product-section aria-labelledby="ProductHeading-{{ section.id }}">
+  <div class="product-detail__inner">
+    <div class="product-detail__gallery" role="group" aria-label="Product media">
+      {% if product.media != blank %}
+        <ul class="product-detail__media-list" role="list">
+          {% for media in product.media %}
+            <li class="product-detail__media-item">
+              {% render 'product-media', media: media, product_title: product.title, first_media: forloop.first %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="product-detail__media-fallback" role="img" aria-label="No image available for {{ product.title | escape }}">
+          <span>No image available</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="product-detail__information">
+      <h1 class="product-detail__title" id="ProductHeading-{{ section.id }}">{{ product.title | escape }}</h1>
+
+      <div class="product-detail__pricing">
+        <span class="product-detail__price" data-product-price>{{ selected_variant.price | money }}</span>
+        <s class="product-detail__compare-price" data-product-compare-price{% unless on_sale %} hidden{% endunless %}>
+          {% if on_sale %}{{ selected_variant.compare_at_price | money }}{% endif %}
+        </s>
+        <span class="product-detail__sale" data-product-sale{% unless on_sale %} hidden{% endunless %}>Sale</span>
+      </div>
+
+      {% form 'product', product, id: product_form_id, class: 'product-detail__form' %}
+        {% if product.variants.size > 1 %}
+          <div class="product-detail__field">
+            <label class="product-detail__label" for="ProductVariant-{{ section.id }}">Option</label>
+            <select class="product-detail__select" id="ProductVariant-{{ section.id }}" name="id" data-product-variant-select>
+              {% for variant in product.variants %}
+                <option
+                  value="{{ variant.id }}"
+                  data-variant-title="{{ variant.title | escape }}"
+                  data-variant-price="{{ variant.price | money | escape }}"
+                  data-variant-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}"
+                  data-variant-sale="{% if variant.compare_at_price > variant.price %}true{% else %}false{% endif %}"
+                  data-variant-available="{{ variant.available }}"
+                  {% if variant.id == selected_variant.id %}selected{% endif %}
+                >
+                  {{ variant.title | escape }}{% unless variant.available %} - Sold out{% endunless %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% elsif selected_variant != blank %}
+          <input type="hidden" name="id" value="{{ selected_variant.id }}">
+        {% endif %}
+
+        <div class="product-detail__field product-detail__field--quantity">
+          <label class="product-detail__label" for="ProductQuantity-{{ section.id }}">Quantity</label>
+          <input class="product-detail__quantity" id="ProductQuantity-{{ section.id }}" type="number" name="quantity" value="1" min="1" step="1" inputmode="numeric" required>
+        </div>
+
+        <p class="product-detail__availability" data-product-availability data-available="{{ selected_variant.available }}">
+          {% if selected_variant.available %}Available{% else %}Sold out{% endif %}
+        </p>
+
+        <button
+          class="product-detail__submit"
+          id="ProductSubmit-{{ section.id }}"
+          type="submit"
+          data-product-submit
+          {% unless selected_variant.available %}disabled{% endunless %}
+        >
+          {% if selected_variant.available %}Add to cart{% else %}Sold out{% endif %}
+        </button>
+
+        {% if product.variants.size > 1 and selected_variant.available == false %}
+          <noscript>
+            <style>#ProductSubmit-{{ section.id }} { display: none; }</style>
+            <p class="product-detail__no-script-note">Choose an available option before adding to cart.</p>
+            <button class="product-detail__submit" type="submit">Add selected option to cart</button>
+          </noscript>
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="product-detail__error" role="alert">
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+      {% endform %}
+
+      <span class="product-detail__announcement" data-product-announcement role="status" aria-live="polite" aria-atomic="true"></span>
+
+      {% if section.settings.show_description and product.description != blank %}
+        <div class="product-detail__description">
+          {{ product.description }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'product.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Product details",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show product description",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
