@@ -760,7 +760,7 @@ img{max-width:100%;height:auto;display:block}
 }
 
 .collections-directory__heading {
-  margin-bottom: var(--space-7);
+  margin-bottom: clamp(3rem, 6vw, 5rem);
   font-size: var(--text-h1);
 }
 
@@ -774,7 +774,7 @@ img{max-width:100%;height:auto;display:block}
 
 .collections-directory__entry {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-6);
   padding-bottom: var(--space-7);
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text);
@@ -795,15 +795,22 @@ img{max-width:100%;height:auto;display:block}
 }
 
 .collections-directory__index {
-  margin-bottom: var(--space-4);
-  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+  color: var(--color-accent);
   font-family: var(--font-mono);
-  font-size: var(--text-mono);
+  font-size: clamp(1.75rem, 2vw + 0.75rem, 3rem);
   font-style: normal;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  /* Define the decorative accent against the light background as well. */
+  -webkit-text-stroke: 0.5px var(--color-accent-text);
 }
 
 .collections-directory__title {
-  font-size: var(--text-h2);
+  font-size: clamp(2.75rem, 5vw + 1rem, 5rem);
+  letter-spacing: -0.025em;
 }
 
 .collections-directory__description {
@@ -831,22 +838,40 @@ img{max-width:100%;height:auto;display:block}
 }
 
 .collections-directory__count {
+  min-width: 0;
   color: var(--color-text-muted);
+  overflow-wrap: anywhere;
 }
 
 .collections-directory__cta {
+  min-width: 0;
+  max-width: 100%;
   margin-inline-start: auto;
   font-family: var(--font-display);
+  font-size: var(--text-body);
   font-style: var(--font-display-style);
   font-weight: var(--font-display-weight-strong);
+  line-height: var(--line-height-tight);
   text-align: end;
+  text-decoration: underline;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.25em;
   overflow-wrap: anywhere;
+}
+
+.collections-directory__cta > [aria-hidden="true"] {
+  display: inline-block;
+  margin-inline-start: var(--space-2);
+  color: var(--color-accent);
+  font-size: 1.75em;
+  line-height: 1;
+  vertical-align: -0.1em;
+  -webkit-text-stroke: 0.5px var(--color-accent-text);
 }
 
 .collections-directory__entry:hover .collections-directory__cta,
 .collections-directory__entry:focus-visible .collections-directory__cta {
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+  text-decoration-thickness: 0.14em;
 }
 
 .collections-directory__media {
