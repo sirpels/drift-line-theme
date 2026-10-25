@@ -105,6 +105,22 @@ The project focuses on:
 - progressive-enhancement variant architecture
 - responsive mobile and desktop layouts
 
+### Cart Page
+
+- native Shopify Cart page
+- persistent Header Cart link and item count
+- semantic cart-item list
+- responsive cart layout
+- quantity editing
+- debounced quantity auto-update using the native Shopify Cart form
+- progressive-enhancement Update Cart fallback
+- Remove item actions
+- subtotal and total pricing
+- Shopify-provided discount rendering
+- Continue Shopping link
+- native Shopify Checkout action
+- empty Cart state
+
 ### Motion System
 
 Motion is treated as part of the UX rather than decoration.
@@ -155,10 +171,12 @@ Currently verified:
 - Product Detail Page
 - sold-out product state
 - native Shopify Add to Cart submission
+- Cart Page
 
 Still in progress or intentionally deferred:
 
-- Cart page / cart drawer
+- Cart drawer
+- AJAX Cart experience
 - advanced filtering and sorting
 - product recommendations
 - advanced product-gallery interactions

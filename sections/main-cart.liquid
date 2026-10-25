@@ -1,0 +1,148 @@
+<section class="cart-page" aria-labelledby="CartHeading-{{ section.id }}">
+  <div class="cart-page__inner">
+    <h1 class="cart-page__heading" id="CartHeading-{{ section.id }}">Your cart</h1>
+
+    {% if cart.item_count == 0 %}
+      <div class="cart-page__empty">
+        <p>Your cart is empty.</p>
+        <a class="cart-page__continue" href="{{ routes.collections_url }}">Continue shopping</a>
+      </div>
+    {% else %}
+      {% form 'cart', cart, id: 'CartForm', class: 'cart-page__form', data-cart-form: '' %}
+        {% if form.errors %}
+          <div class="cart-page__error" role="alert">
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        <ul class="cart-page__items" role="list">
+          {% for item in cart.items %}
+            <li class="cart-page__item">
+              <a class="cart-page__product" href="{{ item.url }}">
+                <span class="cart-page__media">
+                  {% if item.image != blank %}
+                    {{ item.image | image_url: width: 480 | image_tag: widths: '120, 180, 240, 360, 480', sizes: '(min-width: 900px) 144px, 104px', alt: '', loading: 'lazy', class: 'cart-page__image' }}
+                  {% else %}
+                    <span class="cart-page__media-fallback" aria-hidden="true">No image</span>
+                  {% endif %}
+                </span>
+
+                <span class="cart-page__details">
+                  <span class="cart-page__product-title">{{ item.product.title | escape }}</span>
+
+                  {% for option in item.options_with_values %}
+                    {% if option.value != blank and option.value != 'Default Title' %}
+                      <span class="cart-page__metadata">{{ option.name | escape }}: {{ option.value | escape }}</span>
+                    {% endif %}
+                  {% endfor %}
+
+                  {% for property in item.properties %}
+                    {% assign property_prefix = property.first | slice: 0, 1 %}
+                    {% if property.last != blank and property_prefix != '_' %}
+                      <span class="cart-page__metadata">
+                        {{ property.first | escape }}:
+                        {% if property.last contains '/uploads/' %}
+                          {{ property.last | split: '/' | last | escape }}
+                        {% else %}
+                          {{ property.last | escape }}
+                        {% endif %}
+                      </span>
+                    {% endif %}
+                  {% endfor %}
+
+                  <span class="cart-page__unit-price">
+                    <span>Unit price: {{ item.final_price | money }}</span>
+                    {% if item.original_price > item.final_price %}
+                      <s class="cart-page__original-price">{{ item.original_price | money }}</s>
+                    {% endif %}
+                  </span>
+                </span>
+              </a>
+
+              <div class="cart-page__quantity-field">
+                <label for="CartQuantity-{{ section.id }}-{{ forloop.index }}">Quantity for {{ item.product.title | escape }}{% if item.variant != blank and item.variant.title != 'Default Title' %}, {{ item.variant.title | escape }}{% endif %}</label>
+                <input
+                  id="CartQuantity-{{ section.id }}-{{ forloop.index }}"
+                  type="number"
+                  name="updates[]"
+                  value="{{ item.quantity }}"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  required
+                >
+              </div>
+
+              <div class="cart-page__line-total">
+                <span class="cart-page__field-label">Line total</span>
+                <span>{{ item.final_line_price | money }}</span>
+                {% if item.original_line_price > item.final_line_price %}
+                  <s class="cart-page__original-price">{{ item.original_line_price | money }}</s>
+                {% endif %}
+              </div>
+
+              <a
+                class="cart-page__remove"
+                href="{{ item.url_to_remove }}"
+                aria-label="Remove {{ item.product.title | escape }}{% if item.variant != blank and item.variant.title != 'Default Title' %}, {{ item.variant.title | escape }}{% endif %}"
+              >Remove</a>
+
+              {% if item.line_level_discount_allocations.size > 0 %}
+                <ul class="cart-page__line-discounts" aria-label="Item discounts">
+                  {% for allocation in item.line_level_discount_allocations %}
+                    <li>{{ allocation.discount_application.title | escape }}: -{{ allocation.amount | money }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+
+              {% if item.error_message != blank %}
+                <p class="cart-page__error cart-page__line-error" role="alert">{{ item.error_message | escape }}</p>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+
+        <div class="cart-page__footer">
+          <div class="cart-page__secondary-actions">
+            <button class="cart-page__update" type="submit" name="update" data-cart-update>Update cart</button>
+            <p class="cart-page__status" role="status" aria-live="polite" aria-atomic="true" data-cart-status></p>
+            <a class="cart-page__continue" href="{{ routes.collections_url }}">Continue shopping</a>
+          </div>
+
+          <div class="cart-page__summary">
+            <div class="cart-page__summary-row">
+              <span>Subtotal</span>
+              <span>{{ cart.items_subtotal_price | money }}</span>
+            </div>
+
+            {% for discount in cart.cart_level_discount_applications %}
+              <div class="cart-page__summary-row cart-page__summary-row--discount">
+                <span>{{ discount.title | escape }}</span>
+                <span>-{{ discount.total_allocated_amount | money }}</span>
+              </div>
+            {% endfor %}
+
+            <div class="cart-page__summary-row cart-page__summary-row--total">
+              <span>Total</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+
+            {% if cart.taxes_included %}
+              <p class="cart-page__tax-note">Taxes included.</p>
+            {% endif %}
+
+            <button class="cart-page__checkout" type="submit" name="checkout">Checkout</button>
+          </div>
+        </div>
+      {% endform %}
+    {% endif %}
+  </div>
+</section>
+
+<script src="{{ 'cart.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Cart"
+}
+{% endschema %}

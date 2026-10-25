@@ -54,6 +54,16 @@
         </button>
       {% endif %}
 
+      <a
+        class="site-header__cart-link"
+        href="{{ routes.cart_url }}"
+        aria-label="Cart, {{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %}"
+        {% if request.page_type == 'cart' %}aria-current="page"{% endif %}
+      >
+        <span aria-hidden="true">Cart</span>
+        <span class="site-header__cart-count" aria-hidden="true">{{ cart.item_count }}</span>
+      </a>
+
       {% if has_menu %}
         <button
           type="button"
